@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 
 janela = Tk() #root
 
@@ -8,6 +9,7 @@ class Application():                            # uma classe que mantem a janela
         self.tela()                             # chama a funcao tela
         self.frames_da_tela()
         self.widtgets_frame1()
+        self.widgets_frame2()
         janela.mainloop()
     def tela(self):
         self.janela.title("Cadastro de Clientes") #função para as configurações da tela
@@ -68,4 +70,26 @@ class Application():                            # uma classe que mantem a janela
 
         self.cidade_entry = Entry(self.frame_1)
         self.cidade_entry.place(relx=0.5, rely=0.7, relwidth=0.4)
+    def widgets_frame2(self):
+        self.lista_client = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3", "col4"))
+        self.lista_client.heading("#0", text="")
+        self.lista_client.heading("#1", text="Código")
+        self.lista_client.heading("#2", text="Nome")
+        self.lista_client.heading("#3", text="Telefone")
+        self.lista_client.heading("#4", text="Cidade")
+
+        self.lista_client.column("#0", width=1)
+        self.lista_client.column("#1", width=50)
+        self.lista_client.column("#2", width=200)
+        self.lista_client.column("#3", width=125)
+        self.lista_client.column("#4", width=125)
+
+        self.lista_client.place(relx=0.01, rely=0.1, relwidth=0.95, relheight=0.85)
+
+        self.scroll_lista_c = Scrollbar(self.frame_2, orient='vertical')
+        self.lista_client.configure(yscroll=self.scroll_lista_c.set)
+        self.scroll_lista_c.place(relx=0.96, rely=0.1, relwidth=0.04, relheight=0.85)
+
+
+
 Application()
