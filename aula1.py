@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 import mysql.connector # conecta o python ao mysql
+from mysql.connector import errorcode
 
 janela = Tk() #root
 
@@ -21,19 +22,43 @@ class Funcs():
     def desconecta_bd(self):
         self.cursor.close()   # no final do código precisa fechar ambos
         self.conexao.close(); print("Desconectando ao banco de dados")
-    def montaTabelas(self):
-        self.conecta_bd()
-        ### Criar a tabela
-        self.cursor.execute("""
+    def monta_tabelas(self):
+        try:
+            # Conexão com o MySQL
+            self.conexao = mysql.connector.connect(
+                host='localhost',
+                user='root',
+                password='admin'
+        ); print("Conectando ao banco de dados")
+        
+            self.cursor = self.conexao.cursor()
+        
+            # Criação do banco de dados
+            self.cursor.execute("CREATE DATABASE IF NOT EXISTS clientes")
+            self.cursor.execute("USE clientes")
+
+            # Criação da tabela
+            criar_tabela = """
             CREATE TABLE IF NOT EXISTS cadastro_clientes (
                 cod INTEGER PRIMARY KEY,    
                 nome_cliente CHAR(40) NOT NULL,
                 telefone INTEGER(20),
-                cidade CHAR(40)             
-            );
-        """)
-        self.conexao.commit(); print("Tabela criada")
-        self.desconecta_bd()
+                cidade CHAR(40)
+            )
+            """
+        
+            self.cursor.execute(criar_tabela); print("Banco de dados e tabela criados com sucesso!")
+
+        except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                print("Erro: usuário ou senha inválidos")
+            elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                print("Erro: banco de dados não existe")
+            else:
+                print(f"Erro: {err}")
+        finally:
+            # Fechando a conexão
+            self.desconecta_bd()
 
 class Application(Funcs):                            # uma classe que mantem a janela aberta em loop
     def __init__(self):
@@ -42,7 +67,7 @@ class Application(Funcs):                            # uma classe que mantem a j
         self.frames_da_tela()
         self.widtgets_frame1()
         self.widgets_frame2()
-        self.montaTabelas()
+        self.monta_tabelas()
         janela.mainloop()
     def tela(self):
         self.janela.title("Cadastro de Clientes") #função para as configurações da tela
