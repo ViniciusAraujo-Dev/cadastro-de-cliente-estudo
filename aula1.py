@@ -1,15 +1,48 @@
 from tkinter import *
 from tkinter import ttk
+import mysql.connector # conecta o python ao mysql
 
 janela = Tk() #root
 
-class Application():                            # uma classe que mantem a janela aberta em loop
+class Funcs():
+    def limpa_tela(self):
+        self.codigo_entry.delete(0, END)
+        self.nome_entry.delete(0, END)
+        self.telefone_entry.delete(0, END)
+        self.cidade_entry.delete(0, END)
+    def conecta_bd(self):
+        self.conexao = mysql.connector.connect( #precisa passar 4 parametros
+            host='localhost',
+            user='root',
+            password='admin',
+            database='clientes',
+        ); print("Conectando ao banco de dados")
+        self.cursor = self.conexao.cursor() # quem executa os comandos da minha conexão
+    def desconecta_bd(self):
+        self.cursor.close()   # no final do código precisa fechar ambos
+        self.conexao.close(); print("Desconectando ao banco de dados")
+    def montaTabelas(self):
+        self.conecta_bd()
+        ### Criar a tabela
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS cadastro_clientes (
+                cod INTEGER PRIMARY KEY,    
+                nome_cliente CHAR(40) NOT NULL,
+                telefone INTEGER(20),
+                cidade CHAR(40)             
+            );
+        """)
+        self.conexao.commit(); print("Tabela criada")
+        self.desconecta_bd()
+
+class Application(Funcs):                            # uma classe que mantem a janela aberta em loop
     def __init__(self):
         self.janela = janela                    # como janela nao esta na classe, deve-se fazer uma equivalencia
         self.tela()                             # chama a funcao tela
         self.frames_da_tela()
         self.widtgets_frame1()
         self.widgets_frame2()
+        self.montaTabelas()
         janela.mainloop()
     def tela(self):
         self.janela.title("Cadastro de Clientes") #função para as configurações da tela
@@ -28,7 +61,7 @@ class Application():                            # uma classe que mantem a janela
         self.frame_2.place(relx= 0.02, rely=0.5, relwidth=0.95, relheight=0.46)
     def widtgets_frame1(self):
         ### Criação do botão limpar
-        self.bt_limpar = Button(self.frame_1, text="Limpar", bd=2, bg='#107db2', fg='white')
+        self.bt_limpar = Button(self.frame_1, text="Limpar", command=self.limpa_tela,  bd=2, bg='#107db2', fg='white')
         self.bt_limpar.place(relx=0.2, rely=0.1, relwidth=0.1, relheight=0.15)
         ### Criação do botão buscar
         self.bt_buscar = Button(self.frame_1, text="Buscar", bd=2, bg='#107db2', fg='white')
