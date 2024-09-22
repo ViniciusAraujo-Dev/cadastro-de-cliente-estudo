@@ -59,6 +59,18 @@ class Funcs():
         finally:
             # Fechando a conexão
             self.desconecta_bd()
+    def add_cliente(self):
+        self.codigo = self.codigo_entry.get()
+        self.nome = self.nome_entry.get()
+        self.telefone = self.telefone_entry.get()
+        self.cidade = self.cidade_entry.get()
+        self.conecta_bd()
+
+        self.cursor.execute(""" INSERT INTO clientes (nome_clientes, telefone, cidade), VALUES (?, ?, ?)""", (self.mome, self.telefone, self.cidade))
+        self.conexao.commit()
+        self.desconecta_bd()
+
+        
 
 class Application(Funcs):                            # uma classe que mantem a janela aberta em loop
     def __init__(self):
