@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-import mysql.connector # conecta o python ao mysql
-from mysql.connector import errorcode
+import sqlite3
 
 janela = Tk() #root
 
@@ -12,53 +11,24 @@ class Funcs():
         self.telefone_entry.delete(0, END)
         self.cidade_entry.delete(0, END)
     def conecta_bd(self):
-        self.conexao = mysql.connector.connect( #precisa passar 4 parametros
-            host='localhost',
-            user='root',
-            password='admin',
-            database='clientes',
-        ); print("Conectando ao banco de dados")
-        self.cursor = self.conexao.cursor() # quem executa os comandos da minha conexão
+        self.conexao = sqlite3.connect("clientes.bd")
+        self.cursor = self.conexao.cursor(); print("Conectando ao banco de dados")
+        # quem executa os comandos da minha conexão
     def desconecta_bd(self):
-        self.cursor.close()   # no final do código precisa fechar ambos
         self.conexao.close(); print("Desconectando ao banco de dados")
     def monta_tabelas(self):
-        try:
-            # Conexão com o MySQL
-            self.conexao = mysql.connector.connect(
-                host='localhost',
-                user='root',
-                password='admin'
-        ); print("Conectando ao banco de dados")
-        
-            self.cursor = self.conexao.cursor()
-        
-            # Criação do banco de dados
-            self.cursor.execute("CREATE DATABASE IF NOT EXISTS clientes")
-            self.cursor.execute("USE clientes")
-
-            # Criação da tabela
-            criar_tabela = """
+        self.conecta_bd()
+        ### Criar tabela
+        self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS cadastro_clientes (
                 cod INTEGER PRIMARY KEY,    
                 nome_cliente CHAR(40) NOT NULL,
                 telefone INTEGER(20),
                 cidade CHAR(40)
-            )
-            """
-        
-            self.cursor.execute(criar_tabela); print("Banco de dados e tabela criados com sucesso!")
-
-        except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                print("Erro: usuário ou senha inválidos")
-            elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                print("Erro: banco de dados não existe")
-            else:
-                print(f"Erro: {err}")
-        finally:
-            # Fechando a conexão
-            self.desconecta_bd()
+            );
+        """)
+        self.conexao.commit(); print("Banco de dados criado")
+        self.desconecta_bd()
     def add_cliente(self):
         self.codigo = self.codigo_entry.get()
         self.nome = self.nome_entry.get()
@@ -66,11 +36,19 @@ class Funcs():
         self.cidade = self.cidade_entry.get()
         self.conecta_bd()
 
-        self.cursor.execute(""" INSERT INTO clientes (nome_clientes, telefone, cidade), VALUES (?, ?, ?)""", (self.mome, self.telefone, self.cidade))
+        self.cursor.execute(""" INSERT INTO cadastro_clientes (nome_cliente, telefone, cidade) VALUES (?, ?, ?)""", (self.nome, self.telefone, self.cidade))
         self.conexao.commit()
         self.desconecta_bd()
-
-        
+        self.select_lista() # limpa a listagem atual e chama a função de listagem com o novo valor add
+        self.limpa_tela() # limpa todas as entrys do frame 1
+    def select_lista(self):
+        self.lista_client.delete(*self.lista_client.get_children())
+        self.conecta_bd()
+        lista = self.cursor.execute(""" SELECT cod, nome_cliente, telefone, cidade FROM cadastro_clientes
+                ORDER BY nome_cliente ASC; """)
+        for i in lista:
+            self.lista_client.insert("", END, values=i)
+        self.desconecta_bd()        
 
 class Application(Funcs):                            # uma classe que mantem a janela aberta em loop
     def __init__(self):
@@ -80,6 +58,7 @@ class Application(Funcs):                            # uma classe que mantem a j
         self.widtgets_frame1()
         self.widgets_frame2()
         self.monta_tabelas()
+        self.select_lista()
         janela.mainloop()
     def tela(self):
         self.janela.title("Cadastro de Clientes") #função para as configurações da tela
@@ -104,7 +83,7 @@ class Application(Funcs):                            # uma classe que mantem a j
         self.bt_buscar = Button(self.frame_1, text="Buscar", bd=2, bg='#107db2', fg='white')
         self.bt_buscar.place(relx=0.3, rely=0.1, relwidth=0.1, relheight=0.15)
         ### Criação do botão novo
-        self.bt_novo = Button(self.frame_1, text="Novo", bd=2, bg='#107db2', fg='white')
+        self.bt_novo = Button(self.frame_1, text="Novo", command= self.add_cliente, bd=2, bg='#107db2', fg='white')
         self.bt_novo.place(relx=0.6, rely=0.1, relwidth=0.1, relheight=0.15)
         ### Criação do botão alterar
         self.bt_Alterar = Button(self.frame_1, text="Alterar", bd=2, bg='#107db2', fg='white')
