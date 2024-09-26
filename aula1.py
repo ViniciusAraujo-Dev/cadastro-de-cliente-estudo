@@ -29,11 +29,13 @@ class Funcs():
         """)
         self.conexao.commit(); print("Banco de dados criado")
         self.desconecta_bd()
-    def add_cliente(self):
+    def variaveis_entry(self):
         self.codigo = self.codigo_entry.get()
         self.nome = self.nome_entry.get()
         self.telefone = self.telefone_entry.get()
         self.cidade = self.cidade_entry.get()
+    def add_cliente(self):
+        self.variaveis_entry()
         self.conecta_bd()
 
         self.cursor.execute(""" INSERT INTO cadastro_clientes (nome_cliente, telefone, cidade) VALUES (?, ?, ?)""", (self.nome, self.telefone, self.cidade))
@@ -48,7 +50,26 @@ class Funcs():
                 ORDER BY nome_cliente ASC; """)
         for i in lista:
             self.lista_client.insert("", END, values=i)
-        self.desconecta_bd()        
+        self.desconecta_bd()
+    def OnDoubleClick(self, event):
+        self.limpa_tela()
+        self.lista_client.selection()
+
+        for n in self.lista_client.selection():
+            col1, col2, col3, col4 = self.lista_client.item(n, 'values')
+            self.codigo_entry.insert(END, col1)
+            self.nome_entry.insert(END, col2)
+            self.telefone_entry.insert(END, col3)
+            self.cidade_entry.insert(END, col4)
+    def deleta_client(self):
+        self.variaveis_entry()
+        self.conecta_bd()
+        self.cursor.execute("""DELETE FROM cadastro_clientes WHERE cod = ? """, (self.codigo))
+        self.conexao.commit()
+        self.desconecta_bd()
+        self.limpa_tela()
+        self.select_lista()
+
 
 class Application(Funcs):                            # uma classe que mantem a janela aberta em loop
     def __init__(self):
@@ -89,7 +110,7 @@ class Application(Funcs):                            # uma classe que mantem a j
         self.bt_Alterar = Button(self.frame_1, text="Alterar", bd=2, bg='#107db2', fg='white')
         self.bt_Alterar.place(relx=0.7, rely=0.1, relwidth=0.1, relheight=0.15)
         ### Criação do botão apagar
-        self.bt_Apagar = Button(self.frame_1, text="Apagar", bd=2, bg='#107db2', fg='white')
+        self.bt_Apagar = Button(self.frame_1, text="Apagar", command= self.deleta_client, bd=2, bg='#107db2', fg='white')
         self.bt_Apagar.place(relx=0.8, rely=0.1, relwidth=0.1, relheight=0.15)
 
         ### Criação da label e entrada do código
@@ -139,6 +160,8 @@ class Application(Funcs):                            # uma classe que mantem a j
         self.lista_client.configure(yscroll=self.scroll_lista_c.set)
         self.scroll_lista_c.place(relx=0.96, rely=0.1, relwidth=0.04, relheight=0.85)
 
+        # o bind indica que quando tiver alguma interação com o lista_client(treeview) do tipo double mouse 1, aciona o venento da função OnDoubleClick
+        self.lista_client.bind ("<Double-1>", self.OnDoubleClick)  
 
 
 Application()
