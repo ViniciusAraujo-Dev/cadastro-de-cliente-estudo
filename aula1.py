@@ -93,6 +93,9 @@ class Funcs():
             self.lista_client.insert("", END, values=i)
         self.limpa_tela()
         self.desconecta_bd()
+    def imprimir_estado_civil(self):
+        self.estado_civil = self.estado_civil_var.get()
+        print(self.estado_civil)
 
 class Application(Funcs):                            # uma classe que mantem a janela aberta em loop
     def __init__(self):
@@ -175,6 +178,24 @@ class Application(Funcs):                            # uma classe que mantem a j
 
         self.cidade_entry = Entry(self.aba1)
         self.cidade_entry.place(relx=0.5, rely=0.7, relwidth=0.4)
+
+        #### Aba 2
+        #labe optionMenu
+        self.estado_civil_label = Label(self.aba2,text="Estado civil", bg='#dfe3ee', fg='#107db2')
+        self.estado_civil_label.place(relx=0.025, rely=0.1, relwidth=0.2, relheight=0.2)
+
+        ### drop down list
+        self.estado_civil_var = StringVar(self.aba2)
+        self.estado_civil_list = ("Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viuvo(a)")
+        self.estado_civil_var.set("Selecione")
+        self.estado_civil_menu = OptionMenu(self.aba2, self.estado_civil_var, *self.estado_civil_list)
+        self.estado_civil_menu.place(relx=0.2, rely=0.1, relwidth=0.2, relheight=0.2)
+        self.estado_civil = self.estado_civil_var.get()
+
+        # Botão para imprimir
+        botao_imprimir = Button(self.aba2, text="Imprimir", command=self.imprimir_estado_civil)
+        botao_imprimir.place(relx=0.2, rely=0.3, relwidth=0.2, relheight=0.2)
+
     def widgets_frame2(self):
         self.lista_client = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3", "col4"))
         self.lista_client.heading("#0", text="")
