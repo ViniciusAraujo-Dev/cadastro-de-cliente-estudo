@@ -1,8 +1,9 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import tix
 import sqlite3
 
-janela = Tk() #root
+janela = tix.Tk() #root
 
 class Funcs():
     def limpa_tela(self):
@@ -125,6 +126,9 @@ class Application(Funcs):                            # uma classe que mantem a j
         ### Criação do botão buscar
         self.bt_buscar = Button(self.frame_1, text="Buscar", command= self.busca_cliente, bd=2, bg='#107db2', fg='white')
         self.bt_buscar.place(relx=0.3, rely=0.1, relwidth=0.1, relheight=0.15)
+        text_balao_buscar = "Digite no campo nome o cliente que deseja pesquisar"
+        self.balao_buscar = tix.Balloon(self.frame_1)
+        self.balao_buscar.bind_widget(self.bt_buscar, balloonmsg = text_balao_buscar)
         ### Criação do botão novo
         self.bt_novo = Button(self.frame_1, text="Novo", command= self.add_cliente, bd=2, bg='#107db2', fg='white')
         self.bt_novo.place(relx=0.6, rely=0.1, relwidth=0.1, relheight=0.15)
