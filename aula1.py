@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import tix
+from tkinter import messagebox
 import sqlite3
 
 janela = tix.Tk() #root
@@ -37,13 +38,16 @@ class Funcs():
         self.cidade = self.cidade_entry.get()
     def add_cliente(self):
         self.variaveis_entry()
-        self.conecta_bd()
-
-        self.cursor.execute(""" INSERT INTO cadastro_clientes (nome_cliente, telefone, cidade) VALUES (?, ?, ?)""", (self.nome, self.telefone, self.cidade))
-        self.conexao.commit()
-        self.desconecta_bd()
-        self.select_lista() # limpa a listagem atual e chama a função de listagem com o novo valor add
-        self.limpa_tela() # limpa todas as entrys do frame 1
+        if self.nome_entry.get() == "":
+            mensagem = "Para cadastrar um novo cliente é necessário que o campo nome não esteja vazio"
+            messagebox.showinfo("Cadastro de Cliente - Aviso!", mensagem)
+        else:
+            self.conecta_bd()
+            self.cursor.execute(""" INSERT INTO cadastro_clientes (nome_cliente, telefone, cidade) VALUES (?, ?, ?)""", (self.nome, self.telefone, self.cidade))
+            self.conexao.commit()
+            self.desconecta_bd()
+            self.select_lista() # limpa a listagem atual e chama a função de listagem com o novo valor add
+            self.limpa_tela() # limpa todas as entrys do frame 1
     def select_lista(self):
         self.lista_client.delete(*self.lista_client.get_children())
         self.conecta_bd()
@@ -185,7 +189,7 @@ class Application(Funcs):                            # uma classe que mantem a j
         self.estado_civil_label.place(relx=0.025, rely=0.1, relwidth=0.2, relheight=0.2)
 
         ### drop down list
-        self.estado_civil_var = StringVar(self.aba2)
+        self.estado_civil_var = StringVar()
         self.estado_civil_list = ("Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viuvo(a)")
         self.estado_civil_var.set("Selecione")
         self.estado_civil_menu = OptionMenu(self.aba2, self.estado_civil_var, *self.estado_civil_list)
