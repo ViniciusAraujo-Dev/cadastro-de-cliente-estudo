@@ -6,6 +6,15 @@ import sqlite3
 
 janela = tix.Tk() #root
 
+class Validadores:
+    def validate_entry3(self, text):
+        if text =="": return True
+        try:
+            valor = int(text)
+        except ValueError:
+            return False
+        return 0 <= valor <= 1000
+
 class Funcs():
     def limpa_tela(self):
         self.codigo_entry.delete(0, END)
@@ -101,12 +110,13 @@ class Funcs():
         self.estado_civil = self.estado_civil_var.get()
         print(self.estado_civil)
 
-class Application(Funcs):                            # uma classe que mantem a janela aberta em loop
+class Application(Funcs, Validadores):                            # uma classe que mantem a janela aberta em loop
     def __init__(self):
         self.janela = janela                    # como janela nao esta na classe, deve-se fazer uma equivalencia
+        self.valida_entradas()
         self.tela()                             # chama a funcao tela
         self.frames_da_tela()
-        self.widtgets_frame1()
+        self.widgets_frame1()
         self.widgets_frame2()
         self.monta_tabelas()
         self.select_lista()
@@ -126,7 +136,7 @@ class Application(Funcs):                            # uma classe que mantem a j
 
         self.frame_2 = Frame(self.janela, bd=4, bg='#dfe3ee', highlightbackground='#759fe6', highlightthickness=3)
         self.frame_2.place(relx= 0.02, rely=0.5, relwidth=0.95, relheight=0.46)
-    def widtgets_frame1(self):
+    def widgets_frame1(self):
         self.abas = ttk.Notebook(self.frame_1) #passa as abas para o frame_1 e os widgets do frame_1 para as abas
         self.aba1 = Frame(self.abas)
         self.aba1.configure(background= '#dfe3ee')
@@ -159,7 +169,7 @@ class Application(Funcs):                            # uma classe que mantem a j
         self.lb_codigo = Label(self.aba1, text="Código", bg='#dfe3ee', fg='#107db2')
         self.lb_codigo.place(relx=0.05, rely=0.05)
 
-        self.codigo_entry = Entry(self.aba1)
+        self.codigo_entry = Entry(self.aba1, validate = "key", validatecommand=self.valida3)
         self.codigo_entry.place(relx=0.05, rely=0.15, relwidth=0.08)
 
         ### Criação da label e entrada do nome
@@ -199,7 +209,6 @@ class Application(Funcs):                            # uma classe que mantem a j
         # Botão para imprimir
         botao_imprimir = Button(self.aba2, text="Imprimir", command=self.imprimir_estado_civil)
         botao_imprimir.place(relx=0.2, rely=0.3, relwidth=0.2, relheight=0.2)
-
     def widgets_frame2(self):
         self.lista_client = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3", "col4"))
         self.lista_client.heading("#0", text="")
@@ -222,6 +231,7 @@ class Application(Funcs):                            # uma classe que mantem a j
 
         # o bind indica que quando tiver alguma interação com o lista_client(treeview) do tipo double mouse 1, aciona o venento da função OnDoubleClick
         self.lista_client.bind ("<Double-1>", self.OnDoubleClick)  
-
+    def valida_entradas(self):
+        self.valida3 = (self.janela.register(self.validate_entry3), "%P")
 
 Application()
