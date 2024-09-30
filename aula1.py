@@ -61,7 +61,7 @@ class Funcs():
             self.nome_entry.insert(END, col2)
             self.telefone_entry.insert(END, col3)
             self.cidade_entry.insert(END, col4)
-    def deleta_client(self):
+    def deleta_cliente(self):
         self.variaveis_entry()
         self.conecta_bd()
         self.cursor.execute("""DELETE FROM cadastro_clientes WHERE cod = ? """, (self.codigo))
@@ -69,7 +69,15 @@ class Funcs():
         self.desconecta_bd()
         self.limpa_tela()
         self.select_lista()
-
+    def alterar_cliente(self):
+        self.variaveis_entry()
+        self.conecta_bd()
+        self.cursor.execute(""" UPDATE cadastro_clientes SET nome_cliente = ?, telefone = ?, cidade = ? WHERE cod = ? 
+            """, (self.nome, self.telefone, self.cidade, self.codigo))
+        self.conexao.commit()
+        self.desconecta_bd()
+        self.select_lista()
+        self.limpa_tela()
 
 class Application(Funcs):                            # uma classe que mantem a janela aberta em loop
     def __init__(self):
@@ -107,10 +115,10 @@ class Application(Funcs):                            # uma classe que mantem a j
         self.bt_novo = Button(self.frame_1, text="Novo", command= self.add_cliente, bd=2, bg='#107db2', fg='white')
         self.bt_novo.place(relx=0.6, rely=0.1, relwidth=0.1, relheight=0.15)
         ### Criação do botão alterar
-        self.bt_Alterar = Button(self.frame_1, text="Alterar", bd=2, bg='#107db2', fg='white')
+        self.bt_Alterar = Button(self.frame_1, text="Alterar", command= self.alterar_cliente, bd=2, bg='#107db2', fg='white')
         self.bt_Alterar.place(relx=0.7, rely=0.1, relwidth=0.1, relheight=0.15)
         ### Criação do botão apagar
-        self.bt_Apagar = Button(self.frame_1, text="Apagar", command= self.deleta_client, bd=2, bg='#107db2', fg='white')
+        self.bt_Apagar = Button(self.frame_1, text="Apagar", command= self.deleta_cliente, bd=2, bg='#107db2', fg='white')
         self.bt_Apagar.place(relx=0.8, rely=0.1, relwidth=0.1, relheight=0.15)
 
         ### Criação da label e entrada do código
