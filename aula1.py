@@ -78,6 +78,20 @@ class Funcs():
         self.desconecta_bd()
         self.select_lista()
         self.limpa_tela()
+    def busca_cliente(self):
+        self.conecta_bd()
+        self.lista_client.delete(*self.lista_client.get_children())
+
+        self.nome_entry.insert(END, '%') #adciona forçadamente um '%' na entry nome para que na pesquisa inclua tudo que tem o trecho que foi digitado(se digitar 'mar', apare por exemplo, maria, marcos, mariana, marina)
+        nome = self.nome_entry.get()
+        self.cursor.execute(
+            """ SELECT cod, nome_cliente, telefone, cidade FROM cadastro_clientes
+            WHERE nome_cliente LIKE '%s' ORDER BY nome_cliente ASC""" % nome)
+        busca_nome_cli = self.cursor.fetchall() # fecha o laço da pesquisa e para usar no laço for
+        for i in busca_nome_cli:
+            self.lista_client.insert("", END, values=i)
+        self.limpa_tela()
+        self.desconecta_bd()
 
 class Application(Funcs):                            # uma classe que mantem a janela aberta em loop
     def __init__(self):
@@ -109,7 +123,7 @@ class Application(Funcs):                            # uma classe que mantem a j
         self.bt_limpar = Button(self.frame_1, text="Limpar", command=self.limpa_tela,  bd=2, bg='#107db2', fg='white')
         self.bt_limpar.place(relx=0.2, rely=0.1, relwidth=0.1, relheight=0.15)
         ### Criação do botão buscar
-        self.bt_buscar = Button(self.frame_1, text="Buscar", bd=2, bg='#107db2', fg='white')
+        self.bt_buscar = Button(self.frame_1, text="Buscar", command= self.busca_cliente, bd=2, bg='#107db2', fg='white')
         self.bt_buscar.place(relx=0.3, rely=0.1, relwidth=0.1, relheight=0.15)
         ### Criação do botão novo
         self.bt_novo = Button(self.frame_1, text="Novo", command= self.add_cliente, bd=2, bg='#107db2', fg='white')
