@@ -120,51 +120,60 @@ class Application(Funcs):                            # uma classe que mantem a j
         self.frame_2 = Frame(self.janela, bd=4, bg='#dfe3ee', highlightbackground='#759fe6', highlightthickness=3)
         self.frame_2.place(relx= 0.02, rely=0.5, relwidth=0.95, relheight=0.46)
     def widtgets_frame1(self):
+        self.abas = ttk.Notebook(self.frame_1) #passa as abas para o frame_1 e os widgets do frame_1 para as abas
+        self.aba1 = Frame(self.abas)
+        self.aba1.configure(background= '#dfe3ee')
+        self.abas.add(self.aba1, text="Aba 1")
+        self.aba2 = Frame(self.abas)
+        self.aba2.configure(background= '#dfe3ee')
+        self.abas.add(self.aba2, text="Aba 2")
+        self.abas.place(relx=0, rely=0, relwidth=0.98, relheight=0.98)
+
         ### Criação do botão limpar
-        self.bt_limpar = Button(self.frame_1, text="Limpar", command=self.limpa_tela,  bd=2, bg='#107db2', fg='white')
+        self.bt_limpar = Button(self.aba1, text="Limpar", command=self.limpa_tela,  bd=2, bg='#107db2', fg='white')
         self.bt_limpar.place(relx=0.2, rely=0.1, relwidth=0.1, relheight=0.15)
         ### Criação do botão buscar
-        self.bt_buscar = Button(self.frame_1, text="Buscar", command= self.busca_cliente, bd=2, bg='#107db2', fg='white')
+        self.bt_buscar = Button(self.aba1, text="Buscar", command= self.busca_cliente, bd=2, bg='#107db2', fg='white')
         self.bt_buscar.place(relx=0.3, rely=0.1, relwidth=0.1, relheight=0.15)
         text_balao_buscar = "Digite no campo nome o cliente que deseja pesquisar"
-        self.balao_buscar = tix.Balloon(self.frame_1)
+        self.balao_buscar = tix.Balloon(self.aba1)
         self.balao_buscar.bind_widget(self.bt_buscar, balloonmsg = text_balao_buscar)
         ### Criação do botão novo
-        self.bt_novo = Button(self.frame_1, text="Novo", command= self.add_cliente, bd=2, bg='#107db2', fg='white')
+        self.bt_novo = Button(self.aba1, text="Novo", command= self.add_cliente, bd=2, bg='#107db2', fg='white')
         self.bt_novo.place(relx=0.6, rely=0.1, relwidth=0.1, relheight=0.15)
         ### Criação do botão alterar
-        self.bt_Alterar = Button(self.frame_1, text="Alterar", command= self.alterar_cliente, bd=2, bg='#107db2', fg='white')
+        self.bt_Alterar = Button(self.aba1, text="Alterar", command= self.alterar_cliente, bd=2, bg='#107db2', fg='white')
         self.bt_Alterar.place(relx=0.7, rely=0.1, relwidth=0.1, relheight=0.15)
         ### Criação do botão apagar
-        self.bt_Apagar = Button(self.frame_1, text="Apagar", command= self.deleta_cliente, bd=2, bg='#107db2', fg='white')
+        self.bt_Apagar = Button(self.aba1, text="Apagar", command= self.deleta_cliente, bd=2, bg='#107db2', fg='white')
         self.bt_Apagar.place(relx=0.8, rely=0.1, relwidth=0.1, relheight=0.15)
 
         ### Criação da label e entrada do código
-        self.lb_codigo = Label(self.frame_1, text="Código", bg='#dfe3ee', fg='#107db2')
+        self.lb_codigo = Label(self.aba1, text="Código", bg='#dfe3ee', fg='#107db2')
         self.lb_codigo.place(relx=0.05, rely=0.05)
 
-        self.codigo_entry = Entry(self.frame_1)
+        self.codigo_entry = Entry(self.aba1)
         self.codigo_entry.place(relx=0.05, rely=0.15, relwidth=0.08)
 
         ### Criação da label e entrada do nome
-        self.lb_nome = Label(self.frame_1, text="Nome", bg='#dfe3ee', fg='#107db2')
+        self.lb_nome = Label(self.aba1, text="Nome", bg='#dfe3ee', fg='#107db2')
         self.lb_nome.place(relx=0.05, rely=0.35)
 
-        self.nome_entry = Entry(self.frame_1)
+        self.nome_entry = Entry(self.aba1)
         self.nome_entry.place(relx=0.05, rely=0.45, relwidth=0.8)
 
          ### Criação da label e entrada do telefone
-        self.lb_telefone = Label(self.frame_1, text="Telefone", bg='#dfe3ee', fg='#107db2')
+        self.lb_telefone = Label(self.aba1, text="Telefone", bg='#dfe3ee', fg='#107db2')
         self.lb_telefone.place(relx=0.05, rely=0.60)
 
-        self.telefone_entry = Entry(self.frame_1)
+        self.telefone_entry = Entry(self.aba1)
         self.telefone_entry.place(relx=0.05, rely=0.7, relwidth=0.4)
 
          ### Criação da label e entrada da cidade
-        self.lb_cidade = Label(self.frame_1, text="Cidade", bg='#dfe3ee', fg='#107db2')
+        self.lb_cidade = Label(self.aba1, text="Cidade", bg='#dfe3ee', fg='#107db2')
         self.lb_cidade.place(relx=0.5, rely=0.6)
 
-        self.cidade_entry = Entry(self.frame_1)
+        self.cidade_entry = Entry(self.aba1)
         self.cidade_entry.place(relx=0.5, rely=0.7, relwidth=0.4)
     def widgets_frame2(self):
         self.lista_client = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3", "col4"))
